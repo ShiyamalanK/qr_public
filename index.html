@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QR Code Scanner</title>
+    <script src="https://rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js"></script>
+  </head>
+  <body>
+    <h1>QR Code Scanner</h1>
+
+    <div id="reader"></div>
+    <div id="result"></div>
+
+    <script>
+      // Check if local storage is supported
+      if (typeof Storage !== "undefined") {
+        // Get the scanned data from local storage
+        var scannedData = localStorage.getItem("scannedData") || [];
+
+        // Display the previously scanned data
+        displayScannedData(scannedData);
+      } else {
+        alert(
+          "Sorry, your browser does not support Web Storage. Scanned data won't be stored."
+        );
+      }
+
+      // Initialize the QR code scanner
+      var html5QrcodeScanner = new Html5QrcodeScanner(
+        "reader",
+        { fps: 10, qrbox: 250 },
+        /* verbose= */ false
+      );
+
+      // Event handler for successful QR code scan
+      html5QrcodeScanner.render(onScanSuccess);
+
+      function onScanSuccess(qrCodeMessage) {
+        // Display the scanned data
+        displayScannedData(qrCodeMessage);
+
+        // Store the scanned data in local storage
+        storeScannedData(qrCodeMessage);
+      }
+
+      function displayScannedData(data) {
+        var resultDiv = document.getElementById("result");
+        resultDiv.innerHTML = "<p>Scanned Data: " + data + "</p>";
+      }
+
+      function storeScannedData(data) {
+        // Check if local storage is supported
+        if (typeof Storage !== "undefined") {
+          // Get the existing scanned data or initialize an empty array
+          var scannedData =
+            JSON.parse(localStorage.getItem("scannedData")) || [];
+
+          // Add the new scanned data
+          scannedData.push(data);
+
+          // Store the updated scanned data in local storage
+          localStorage.setItem("scannedData", JSON.stringify(scannedData));
+        }
+      }
+    </script>
+  </body>
+</html>
